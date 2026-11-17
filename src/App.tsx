@@ -45,12 +45,12 @@ export default function App() {
         <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
           {TOOL_IDS.map((id) => (
             <li key={id} className="flex items-center gap-2">
-              <ToolIcon id={id} size={20} className="text-ink-2" />
+              <ToolIcon id={id} size={20} />
               {TOOLS[id].name}
             </li>
           ))}
           <li className="flex items-center gap-2">
-            <ToolIcon id="kafka" size={20} className="text-ink-2" />
+            <ToolIcon id="kafka" size={20} />
             Kafka
           </li>
         </ul>

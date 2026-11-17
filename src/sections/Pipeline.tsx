@@ -133,7 +133,7 @@ export function Pipeline() {
               {n.color && <rect x={n.x} y={n.y + 14} width={4} height={NH - 28} rx={2} fill={n.color} />}
               <text x={n.x + 16} y={n.y + 28} fontSize={15} fontWeight={600} fill="#f0efec">{n.title}</text>
               <text x={n.x + 16} y={n.y + 47} fontSize={12} fill="#898781">{n.sub}</text>
-              {n.icon && <ToolIcon id={n.icon} size={18} x={n.x + NW - 28} y={n.y + 12} className="text-ink-2" />}
+              {n.icon && <ToolIcon id={n.icon} size={18} x={n.x + NW - 28} y={n.y + 12} />}
               {n.log && <LogTape x={n.x} y={n.y + NH + 8} />}
             </g>
           ))}
