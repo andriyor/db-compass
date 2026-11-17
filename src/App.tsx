@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { markerFor, type Answers } from './recommend.ts'
+import { ToolIcon } from './ToolIcon.tsx'
+import { TOOL_IDS, TOOLS } from './tools.ts'
 import { Chooser } from './sections/Chooser.tsx'
 import { FitMatrix } from './sections/FitMatrix.tsx'
 import { Landscape } from './sections/Landscape.tsx'
@@ -40,6 +42,18 @@ export default function App() {
           When to reach for <b className="text-lite">SQLite</b>, <b className="text-pg">PostgreSQL</b>, <b className="text-ink">MySQL</b>, <b className="text-ink">TimescaleDB</b>,{' '}
           <b className="text-ch">ClickHouse</b>, <b className="text-ink">DuckDB</b> and <b className="text-ink">Cube</b> — explained by how data moves, not by feature lists.
         </p>
+        <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
+          {TOOL_IDS.map((id) => (
+            <li key={id} className="flex items-center gap-2">
+              <ToolIcon id={id} size={20} className="text-ink-2" />
+              {TOOLS[id].name}
+            </li>
+          ))}
+          <li className="flex items-center gap-2">
+            <ToolIcon id="kafka" size={20} className="text-ink-2" />
+            Kafka
+          </li>
+        </ul>
       </header>
 
       <Section n="01" title="Two kinds of work" lead="Every database is tuned for one shape of query. Pick the shape first; the tool follows.">

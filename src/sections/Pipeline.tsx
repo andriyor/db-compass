@@ -1,19 +1,21 @@
 import { useState } from 'react'
+import { ToolIcon } from '../ToolIcon.tsx'
+import type { ToolId } from '../tools.ts'
 
 type Path = 'oltp' | 'olap' | 'stream'
-type Node = { id: string; x: number; y: number; title: string; sub: string; color?: string; dashed?: boolean; log?: boolean; kafka?: boolean; path: Path[] }
+type Node = { id: string; icon?: ToolId | 'kafka'; x: number; y: number; title: string; sub: string; color?: string; dashed?: boolean; log?: boolean; kafka?: boolean; path: Path[] }
 
 const N = '#c3c2b7' // neutral ink: Kafka and Cube are not databases, so no categorical hue
 const NODES: Node[] = [
   { id: 'mobile', x: 20, y: 40, title: 'Mobile app', sub: 'offline-first', path: ['oltp'] },
   { id: 'web', x: 20, y: 190, title: 'Web / API', sub: 'users click “Buy”', path: ['oltp'] },
   { id: 'events', x: 20, y: 340, title: 'Event producers', sub: 'clicks, logs, IoT', path: ['olap', 'stream'] },
-  { id: 'sqlite', x: 270, y: 40, title: 'SQLite', sub: 'on the device', color: '#199e70', path: ['oltp'] },
-  { id: 'pg', x: 270, y: 190, title: 'PostgreSQL', sub: 'system of record', color: '#3987e5', path: ['oltp', 'olap', 'stream'] },
-  { id: 'kafka', x: 500, y: 265, title: 'Kafka', sub: 'durable event log', color: N, log: true, kafka: true, path: ['olap', 'stream'] },
-  { id: 'ch', x: 730, y: 265, title: 'ClickHouse', sub: 'analytics warehouse', color: '#d95926', path: ['olap', 'stream'] },
+  { id: 'sqlite', icon: 'sqlite', x: 270, y: 40, title: 'SQLite', sub: 'on the device', color: '#199e70', path: ['oltp'] },
+  { id: 'pg', icon: 'postgres', x: 270, y: 190, title: 'PostgreSQL', sub: 'system of record', color: '#3987e5', path: ['oltp', 'olap', 'stream'] },
+  { id: 'kafka', icon: 'kafka', x: 500, y: 265, title: 'Kafka', sub: 'durable event log', color: N, log: true, kafka: true, path: ['olap', 'stream'] },
+  { id: 'ch', icon: 'clickhouse', x: 730, y: 265, title: 'ClickHouse', sub: 'analytics warehouse', color: '#d95926', path: ['olap', 'stream'] },
   { id: 'services', x: 730, y: 410, title: 'Other services', sub: 'search, email, fraud', kafka: true, path: ['stream'] },
-  { id: 'cube', x: 960, y: 265, title: 'Cube', sub: 'metrics + cache', color: N, dashed: true, path: ['olap'] },
+  { id: 'cube', icon: 'cube', x: 960, y: 265, title: 'Cube', sub: 'metrics + cache', color: N, dashed: true, path: ['olap'] },
   { id: 'bi', x: 1190, y: 190, title: 'Dashboards', sub: 'BI tools', path: ['olap'] },
   { id: 'emb', x: 1190, y: 340, title: 'Apps & AI agents', sub: 'REST · GraphQL · SQL', path: ['olap'] },
 ]
@@ -131,6 +133,7 @@ export function Pipeline() {
               {n.color && <rect x={n.x} y={n.y + 14} width={4} height={NH - 28} rx={2} fill={n.color} />}
               <text x={n.x + 16} y={n.y + 28} fontSize={15} fontWeight={600} fill="#f0efec">{n.title}</text>
               <text x={n.x + 16} y={n.y + 47} fontSize={12} fill="#898781">{n.sub}</text>
+              {n.icon && <ToolIcon id={n.icon} size={18} x={n.x + NW - 28} y={n.y + 12} className="text-ink-2" />}
               {n.log && <LogTape x={n.x} y={n.y + NH + 8} />}
             </g>
           ))}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ToolIcon } from '../ToolIcon.tsx'
 import { swatch, TOOLS, type ToolId } from '../tools.ts'
 
 const W = 760
@@ -102,7 +103,8 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
               strokeDasharray="6 5"
               strokeWidth={active === 'cube' ? 2 : 1.2}
             />
-            <text x={X(0.58)} y={34} fontSize={14} fontWeight={600} fill="#f0efec" textAnchor="middle">
+            <ToolIcon id="cube" size={16} x={X(0.58) - 98} y={21} className="text-ink-2" />
+            <text x={X(0.58) + 10} y={34} fontSize={14} fontWeight={600} fill="#f0efec" textAnchor="middle">
               Cube · semantic layer
             </text>
             <text x={X(0.58)} y={50} fontSize={11} fill="#c3c2b7" textAnchor="middle">
@@ -132,7 +134,9 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
                   strokeWidth={on ? 2.5 : 1.5}
                   className="transition-all duration-200"
                 />
-                <text x={X(r.lx)} y={Y(r.ly) + 5} fontSize={16} fontWeight={600} fill="#f0efec" textAnchor="middle" className="pointer-events-none">
+                {/* icon sits left of the label; ~0.58em per glyph approximates the label width */}
+                <ToolIcon id={r.id} size={16} x={X(r.lx) - (t.name.length * 16 * 0.58) / 2 - 12} y={Y(r.ly) - 8} className="pointer-events-none text-ink-2" />
+                <text x={X(r.lx) + 10} y={Y(r.ly) + 5} fontSize={16} fontWeight={600} fill="#f0efec" textAnchor="middle" className="pointer-events-none">
                   {t.name}
                 </text>
               </g>
@@ -154,6 +158,7 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
             className="size-3 rounded-full"
             style={swatch(active)}
           />
+          <ToolIcon id={active} size={20} className="text-ink-2" />
           <h3 className="text-lg font-semibold">{tool.name}</h3>
         </div>
         <p className="mt-1 text-xs uppercase tracking-wide text-muted">{tool.kind}</p>

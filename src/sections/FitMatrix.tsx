@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ToolIcon } from '../ToolIcon.tsx'
 import { swatch, TOOL_IDS, TOOLS } from '../tools.ts'
 
 type Fit = 0 | 1 | 2 | 3
@@ -36,6 +37,7 @@ export function FitMatrix() {
               <th className="text-left font-normal text-muted">Scenario</th>
               {TOOL_IDS.map((id) => (
                 <th key={id} className="w-24 pb-2 text-center font-medium text-ink">
+                  <ToolIcon id={id} size={18} className="mx-auto mb-1 text-ink-2" />
                   <span className="inline-flex items-center gap-1.5">
                     <span
                       className="size-2 rounded-full"

@@ -1,4 +1,5 @@
 import { recommend, type Answers } from '../recommend.ts'
+import { ToolIcon } from '../ToolIcon.tsx'
 import { swatch, TOOLS } from '../tools.ts'
 
 type Option<K extends keyof Answers> = { value: Answers[K]; label: string }
@@ -94,8 +95,11 @@ export function Chooser({ answers, onChange }: { answers: Answers; onChange: (a:
 
         <ul className="mt-6 space-y-3" aria-label="Fit score per tool">
           {scores.map((s) => (
-            <li key={s.id} className="grid grid-cols-[6.5rem_1fr_2.5rem] items-center gap-3 text-sm">
-              <span className="text-ink-2">{TOOLS[s.id].name}</span>
+            <li key={s.id} className="grid grid-cols-[8rem_1fr_2.5rem] items-center gap-3 text-sm">
+              <span className="flex items-center gap-2 text-ink-2">
+                <ToolIcon id={s.id} size={14} />
+                {TOOLS[s.id].name}
+              </span>
               <span className="h-3 rounded-full bg-grid">
                 <span
                   className="block h-full rounded-full transition-all duration-500"
