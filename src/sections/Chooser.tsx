@@ -11,6 +11,13 @@ const QUESTIONS: { [K in keyof Answers]: { q: string; options: Option<K>[] } } =
       { value: 'analytics', label: 'Answer “how many / how much”' },
     ],
   },
+  timeseries: {
+    q: 'Is it mostly timestamped readings (metrics, sensors, prices)?',
+    options: [
+      { value: 'no', label: 'No' },
+      { value: 'yes', label: 'Yes, time series' },
+    ],
+  },
   deployment: {
     q: 'Where does it run?',
     options: [

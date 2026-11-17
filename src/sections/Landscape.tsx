@@ -11,9 +11,11 @@ const Y = (v: number) => M.t + (1 - v) * ph
 
 const REGIONS: { id: Exclude<ToolId, 'cube'>; cx: number; cy: number; rx: number; ry: number; lx: number; ly: number }[] = [
   { id: 'sqlite', cx: 0.17, cy: 0.15, rx: 0.14, ry: 0.11, lx: 0.2, ly: 0.18 },
-  { id: 'postgres', cx: 0.33, cy: 0.47, rx: 0.22, ry: 0.19, lx: 0.45, ly: 0.42 },
+  { id: 'postgres', cx: 0.33, cy: 0.47, rx: 0.22, ry: 0.19, lx: 0.38, ly: 0.34 },
   // Same job as Postgres, so it sits on top of it; outline only so Postgres shows through.
   { id: 'mysql', cx: 0.22, cy: 0.52, rx: 0.12, ry: 0.14, lx: 0.22, ly: 0.58 },
+  // Postgres stretched toward analytics: overlaps both neighbours on purpose.
+  { id: 'timescale', cx: 0.54, cy: 0.5, rx: 0.1, ry: 0.13, lx: 0.55, ly: 0.45 },
   { id: 'clickhouse', cx: 0.78, cy: 0.64, rx: 0.19, ry: 0.27, lx: 0.76, ly: 0.75 },
   { id: 'duckdb', cx: 0.78, cy: 0.15, rx: 0.17, ry: 0.11, lx: 0.74, ly: 0.18 },
 ]
@@ -41,6 +43,10 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
               <stop offset="0.5" stopColor="#1a1a19" stopOpacity="0" />
               <stop offset="1" stopColor="#d95926" stopOpacity="0.07" />
             </linearGradient>
+            <pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse">
+              <rect width="6" height="6" fill="#1a1a19" fillOpacity="0.6" />
+              <circle cx="3" cy="3" r="1.3" fill="#c3c2b7" fillOpacity="0.6" />
+            </pattern>
             <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
               <rect width="7" height="7" fill="#c3c2b7" fillOpacity="0.06" />
               <line x1="0" y1="0" x2="0" y2="7" stroke="#c3c2b7" strokeOpacity="0.45" strokeWidth="2" />
@@ -112,7 +118,7 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
             const on = active === r.id
             return (
               <g key={r.id} {...bind(r.id)}>
-                {r.id === 'mysql' && (
+                {(r.id === 'mysql' || r.id === 'timescale') && (
                   <ellipse cx={X(r.cx)} cy={Y(r.cy)} rx={r.rx * pw} ry={r.ry * ph} fill="none" stroke="#1a1a19" strokeWidth={5} />
                 )}
                 <ellipse
@@ -120,8 +126,8 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
                   cy={Y(r.cy)}
                   rx={r.rx * pw}
                   ry={r.ry * ph}
-                  fill={r.id === 'duckdb' ? 'url(#hatch)' : r.id === 'mysql' ? '#c3c2b7' : t.color}
-                  fillOpacity={r.id === 'duckdb' ? 1 : r.id === 'mysql' ? (on ? 0.12 : 0.02) : on ? 0.32 : 0.16}
+                  fill={r.id === 'duckdb' ? 'url(#hatch)' : r.id === 'timescale' ? 'url(#dots)' : r.id === 'mysql' ? '#c3c2b7' : t.color}
+                  fillOpacity={r.id === 'duckdb' || r.id === 'timescale' ? 1 : r.id === 'mysql' ? (on ? 0.12 : 0.02) : on ? 0.32 : 0.16}
                   stroke={t.color}
                   strokeWidth={on ? 2.5 : 1.5}
                   className="transition-all duration-200"
@@ -137,7 +143,7 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
           <g style={{ transform: `translate(${X(marker.x)}px, ${Y(marker.y)}px)`, transition: 'transform 500ms cubic-bezier(.2,.8,.2,1)' }}>
             <circle r={14} fill="none" stroke="#f0efec" strokeOpacity={0.4} strokeWidth={2} />
             <circle r={6} fill="#f0efec" stroke="#1a1a19" strokeWidth={2} />
-            <text x={18} y={4} fontSize={12} fill="#f0efec" fontWeight={600}>you</text>
+            <text x={-18} y={4} fontSize={12} fill="#f0efec" fontWeight={600} textAnchor="end" paintOrder="stroke" stroke="#1a1a19" strokeWidth={4}>you</text>
           </g>
         </svg>
       </div>

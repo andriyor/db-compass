@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 
-export type ToolId = 'sqlite' | 'postgres' | 'mysql' | 'clickhouse' | 'duckdb' | 'cube'
+export type ToolId = 'sqlite' | 'postgres' | 'mysql' | 'timescale' | 'clickhouse' | 'duckdb' | 'cube'
 
 export type Tool = {
   name: string
@@ -12,7 +12,7 @@ export type Tool = {
 }
 
 // Categorical slots 1–3 (validated all-pairs on the dark surface). No 4th hue passes
-// all-pairs, so the rest are neutral: MySQL solid outline, DuckDB hatched, Cube dashed outline.
+// all-pairs, so the rest are neutral: MySQL outline, TimescaleDB dotted, DuckDB hatched, Cube dashed outline.
 export const TOOLS: Record<ToolId, Tool> = {
   sqlite: {
     name: 'SQLite',
@@ -37,6 +37,14 @@ export const TOOLS: Record<ToolId, Tool> = {
     tagline: 'Postgres’s long-time rival for the same job: simple, fast, everywhere.',
     use: ['Read-heavy web apps (WordPress, Shopify-style stacks)', 'Teams and hosting that already run it', 'Huge proven ecosystem: replicas, PlanetScale, Vitess'],
     avoid: ['Heavy analytics or complex reporting SQL', 'Needing Postgres extras: rich types, extensions like PostGIS'],
+  },
+  timescale: {
+    name: 'TimescaleDB',
+    color: '#c3c2b7',
+    kind: 'Time-series · a PostgreSQL extension',
+    tagline: 'Postgres that understands time: auto-partitioned by time, compressed into columns, with rollups that stay fresh.',
+    use: ['Metrics, IoT sensors, prices — anything with a timestamp', 'Time series next to relational data, joined in plain SQL', 'Dashboards over recent data plus long compressed history'],
+    avoid: ['Billions of events across many tenants: ClickHouse scales further', 'Pure infrastructure monitoring: Prometheus / InfluxDB are purpose-built'],
   },
   clickhouse: {
     name: 'ClickHouse',
@@ -73,6 +81,8 @@ export const swatch = (id: ToolId): CSSProperties =>
     ? { border: '1.5px dashed #c3c2b7' }
     : id === 'mysql'
       ? { boxShadow: 'inset 0 0 0 1.5px #c3c2b7' }
+      : id === 'timescale'
+        ? { background: 'radial-gradient(#c3c2b7 1.2px, transparent 1.6px) 0 0 / 5px 5px', boxShadow: 'inset 0 0 0 1.5px #c3c2b7' }
     : id === 'duckdb'
       ? { background: HATCH, boxShadow: 'inset 0 0 0 1.5px #c3c2b7' }
       : { background: TOOLS[id].color }

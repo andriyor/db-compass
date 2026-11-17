@@ -20,6 +20,7 @@ const CONCEPT = [
 export default function App() {
   const [answers, setAnswers] = useState<Answers>({
     workload: 'transactions',
+    timeseries: 'no',
     deployment: 'server',
     writers: 'many',
     size: 1,
@@ -36,7 +37,7 @@ export default function App() {
           Understand it with <span className="text-ch">OLAP</span>.
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-ink-2">
-          When to reach for <b className="text-lite">SQLite</b>, <b className="text-pg">PostgreSQL</b>, <b className="text-ink">MySQL</b>,{' '}
+          When to reach for <b className="text-lite">SQLite</b>, <b className="text-pg">PostgreSQL</b>, <b className="text-ink">MySQL</b>, <b className="text-ink">TimescaleDB</b>,{' '}
           <b className="text-ch">ClickHouse</b>, <b className="text-ink">DuckDB</b> and <b className="text-ink">Cube</b> — explained by how data moves, not by feature lists.
         </p>
       </header>
@@ -76,7 +77,7 @@ export default function App() {
         <Landscape marker={markerFor(answers)} />
       </Section>
 
-      <Section n="04" title="Which one for my project?" lead="Answer five questions. The “you” dot on the map above moves with your answers.">
+      <Section n="04" title="Which one for my project?" lead="Answer six questions. The “you” dot on the map above moves with your answers.">
         <Chooser answers={answers} onChange={setAnswers} />
       </Section>
 
