@@ -28,6 +28,10 @@ React, Vite, Tailwind CSS v4 and hand-written SVG, with no chart library. The lo
 
 The chart colours follow a palette that was checked for colour-blind readability. Only three colours stay distinguishable on the map, so blue, orange and green go to PostgreSQL, ClickHouse and SQLite. The other tools are grey and told apart by a texture or outline: MySQL has a plain outline, TimescaleDB a dotted fill, DuckDB a hatched fill, and Cube a dashed outline.
 
+## Further reading
+
+- [Pandas should go extinct](https://eddie.codes/posts/pandas-should-go-extinct/) on eddie.codes. It argues that most data is "medium data" (roughly 95% of tables are under 100 GB) that one machine running DuckDB or Polars handles, and benchmarks both against pandas. The chooser's data-size note and DuckDB's description draw on it.
+
 ## Where things live
 
 | File | What |
