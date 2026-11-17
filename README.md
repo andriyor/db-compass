@@ -1,32 +1,38 @@
-# React + TypeScript + Vite
+# DB Compass
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A visual guide to **OLTP vs OLAP**, and to when you'd reach for **SQLite, PostgreSQL, MySQL, TimescaleDB, ClickHouse, DuckDB, Cube** and **Kafka**. It explains them by how data moves, not by feature lists.
 
-Currently, two official plugins are available:
+## What's on the page
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. **Two kinds of work.** OLTP and OLAP side by side: the typical query, how many rows and columns it touches, writes, latency, storage layout.
+2. **Why the storage layout decides it.** One small table is laid out as disk pages twice, row by row and column by column. Switch between "fetch order #6" and "total revenue" and count the pages each layout reads.
+3. **The map.** Workload (transactional → analytical) against scale (device → cluster), with each database as a region. Cube is drawn as a layer above the databases because it's a semantic layer, not a database. Hover a region to see when to use it and when to avoid it.
+4. **Which one for my project?** Six questions give each tool a fit score and the reasons behind it, and move a "you" dot on the map.
+5. **How they fit together.** An animated diagram of a typical setup: app → Postgres, phone → SQLite, CDC/events → ClickHouse → Cube → dashboards and apps. You can highlight just the OLTP or OLAP path, or switch on **Kafka** to see the streaming path.
+6. **Cheat sheet.** Common scenarios against each tool, rated great / good / meh / —. Hover a row to see why.
 
-## React Compiler
+The fit scores are hand-tuned weights for teaching, not benchmarks.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Run it
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+pnpm install
+pnpm dev       # http://localhost:5173
+pnpm test      # scoring heuristics (node:test, needs Node ≥ 22.18)
+pnpm build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Built with
+
+React, Vite, Tailwind CSS v4 and hand-written SVG, with no chart library. The logos come from [Simple Icons](https://simpleicons.org).
+
+The chart colours follow a palette that was checked for colour-blind readability. Only three colours stay distinguishable on the map, so blue, orange and green go to PostgreSQL, ClickHouse and SQLite. The other tools are grey and told apart by a texture or outline: MySQL has a plain outline, TimescaleDB a dotted fill, DuckDB a hatched fill, and Cube a dashed outline.
+
+## Where things live
+
+| File | What |
+|---|---|
+| `src/tools.ts` | Each tool's name, colour, description and when to use or avoid it |
+| `src/recommend.ts` | The chooser's scoring heuristics and the "you" dot position |
+| `src/sections/` | One component per section of the page |
+| `src/ToolIcon.tsx` | Brand icons and colours |
