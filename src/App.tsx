@@ -14,7 +14,7 @@ const CONCEPT = [
   ['Writes', 'constant small updates', 'bulk appends'],
   ['Latency goal', 'milliseconds', 'seconds is fine'],
   ['Storage layout', 'row by row', 'column by column, compressed'],
-  ['Here', 'SQLite, PostgreSQL', 'ClickHouse, DuckDB (+ Cube on top)'],
+  ['Here', 'SQLite, PostgreSQL, MySQL', 'ClickHouse, DuckDB (+ Cube on top)'],
 ]
 
 export default function App() {
@@ -36,7 +36,7 @@ export default function App() {
           Understand it with <span className="text-ch">OLAP</span>.
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-ink-2">
-          When to reach for <b className="text-lite">SQLite</b>, <b className="text-pg">PostgreSQL</b>,{' '}
+          When to reach for <b className="text-lite">SQLite</b>, <b className="text-pg">PostgreSQL</b>, <b className="text-ink">MySQL</b>,{' '}
           <b className="text-ch">ClickHouse</b>, <b className="text-ink">DuckDB</b> and <b className="text-ink">Cube</b> — explained by how data moves, not by feature lists.
         </p>
       </header>

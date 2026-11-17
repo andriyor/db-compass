@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 
-export type ToolId = 'sqlite' | 'postgres' | 'clickhouse' | 'duckdb' | 'cube'
+export type ToolId = 'sqlite' | 'postgres' | 'mysql' | 'clickhouse' | 'duckdb' | 'cube'
 
 export type Tool = {
   name: string
@@ -12,7 +12,7 @@ export type Tool = {
 }
 
 // Categorical slots 1–3 (validated all-pairs on the dark surface). No 4th hue passes
-// all-pairs, so DuckDB is neutral + hatched and Cube neutral + dashed outline.
+// all-pairs, so the rest are neutral: MySQL solid outline, DuckDB hatched, Cube dashed outline.
 export const TOOLS: Record<ToolId, Tool> = {
   sqlite: {
     name: 'SQLite',
@@ -29,6 +29,14 @@ export const TOOLS: Record<ToolId, Tool> = {
     tagline: 'The default system of record for your application.',
     use: ['Users, orders, payments — anything CRUD', 'Strict transactions and constraints', 'Moderate reporting with good indexes'],
     avoid: ['Aggregating billions of events interactively', 'Embedding inside a client app'],
+  },
+  mysql: {
+    name: 'MySQL',
+    color: '#c3c2b7',
+    kind: 'Server OLTP · row store',
+    tagline: 'Postgres’s long-time rival for the same job: simple, fast, everywhere.',
+    use: ['Read-heavy web apps (WordPress, Shopify-style stacks)', 'Teams and hosting that already run it', 'Huge proven ecosystem: replicas, PlanetScale, Vitess'],
+    avoid: ['Heavy analytics or complex reporting SQL', 'Needing Postgres extras: rich types, extensions like PostGIS'],
   },
   clickhouse: {
     name: 'ClickHouse',
@@ -63,6 +71,8 @@ const HATCH = 'repeating-linear-gradient(45deg,#c3c2b7 0 2px,transparent 2px 5px
 export const swatch = (id: ToolId): CSSProperties =>
   id === 'cube'
     ? { border: '1.5px dashed #c3c2b7' }
+    : id === 'mysql'
+      ? { boxShadow: 'inset 0 0 0 1.5px #c3c2b7' }
     : id === 'duckdb'
       ? { background: HATCH, boxShadow: 'inset 0 0 0 1.5px #c3c2b7' }
       : { background: TOOLS[id].color }

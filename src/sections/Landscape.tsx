@@ -11,7 +11,9 @@ const Y = (v: number) => M.t + (1 - v) * ph
 
 const REGIONS: { id: Exclude<ToolId, 'cube'>; cx: number; cy: number; rx: number; ry: number; lx: number; ly: number }[] = [
   { id: 'sqlite', cx: 0.17, cy: 0.15, rx: 0.14, ry: 0.11, lx: 0.2, ly: 0.18 },
-  { id: 'postgres', cx: 0.33, cy: 0.47, rx: 0.22, ry: 0.19, lx: 0.36, ly: 0.56 },
+  { id: 'postgres', cx: 0.33, cy: 0.47, rx: 0.22, ry: 0.19, lx: 0.45, ly: 0.42 },
+  // Same job as Postgres, so it sits on top of it; outline only so Postgres shows through.
+  { id: 'mysql', cx: 0.22, cy: 0.52, rx: 0.12, ry: 0.14, lx: 0.22, ly: 0.58 },
   { id: 'clickhouse', cx: 0.78, cy: 0.64, rx: 0.19, ry: 0.27, lx: 0.76, ly: 0.75 },
   { id: 'duckdb', cx: 0.78, cy: 0.15, rx: 0.17, ry: 0.11, lx: 0.74, ly: 0.18 },
 ]
@@ -110,13 +112,16 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
             const on = active === r.id
             return (
               <g key={r.id} {...bind(r.id)}>
+                {r.id === 'mysql' && (
+                  <ellipse cx={X(r.cx)} cy={Y(r.cy)} rx={r.rx * pw} ry={r.ry * ph} fill="none" stroke="#1a1a19" strokeWidth={5} />
+                )}
                 <ellipse
                   cx={X(r.cx)}
                   cy={Y(r.cy)}
                   rx={r.rx * pw}
                   ry={r.ry * ph}
-                  fill={r.id === 'duckdb' ? 'url(#hatch)' : t.color}
-                  fillOpacity={r.id === 'duckdb' ? 1 : on ? 0.32 : 0.16}
+                  fill={r.id === 'duckdb' ? 'url(#hatch)' : r.id === 'mysql' ? '#c3c2b7' : t.color}
+                  fillOpacity={r.id === 'duckdb' ? 1 : r.id === 'mysql' ? (on ? 0.12 : 0.02) : on ? 0.32 : 0.16}
                   stroke={t.color}
                   strokeWidth={on ? 2.5 : 1.5}
                   className="transition-all duration-200"

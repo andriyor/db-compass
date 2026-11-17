@@ -10,6 +10,10 @@ test('local app with small data → SQLite', () => {
 test('web app with many writers → Postgres', () => {
   assert.equal(top({ workload: 'transactions', deployment: 'server', writers: 'many', size: 1, consumers: 'app' }), 'postgres')
 })
+test('web app: Postgres first, MySQL a close second', () => {
+  const ids = recommend({ workload: 'transactions', deployment: 'server', writers: 'many', size: 1, consumers: 'app' }).map((s) => s.id)
+  assert.deepEqual(ids.slice(0, 2), ['postgres', 'mysql'])
+})
 test('TB of events → ClickHouse', () => {
   assert.equal(top({ workload: 'analytics', deployment: 'server', writers: 'many', size: 3, consumers: 'app' }), 'clickhouse')
 })
