@@ -1,32 +1,39 @@
 import { useState } from 'react'
 
-type Node = { id: string; x: number; y: number; title: string; sub: string; color?: string; dashed?: boolean; path: Path[] }
-type Path = 'oltp' | 'olap'
+type Path = 'oltp' | 'olap' | 'stream'
+type Node = { id: string; x: number; y: number; title: string; sub: string; color?: string; dashed?: boolean; log?: boolean; kafka?: boolean; path: Path[] }
 
+const N = '#c3c2b7' // neutral ink: Kafka and Cube are not databases, so no categorical hue
 const NODES: Node[] = [
   { id: 'mobile', x: 20, y: 40, title: 'Mobile app', sub: 'offline-first', path: ['oltp'] },
   { id: 'web', x: 20, y: 190, title: 'Web / API', sub: 'users click “Buy”', path: ['oltp'] },
-  { id: 'events', x: 20, y: 340, title: 'Event stream', sub: 'clicks, logs', path: ['olap'] },
+  { id: 'events', x: 20, y: 340, title: 'Event producers', sub: 'clicks, logs, IoT', path: ['olap', 'stream'] },
   { id: 'sqlite', x: 270, y: 40, title: 'SQLite', sub: 'on the device', color: '#199e70', path: ['oltp'] },
-  { id: 'pg', x: 270, y: 190, title: 'PostgreSQL', sub: 'system of record', color: '#3987e5', path: ['oltp', 'olap'] },
-  { id: 'ch', x: 500, y: 265, title: 'ClickHouse', sub: 'analytics warehouse', color: '#d95926', path: ['olap'] },
-  { id: 'cube', x: 730, y: 265, title: 'Cube', sub: 'metrics + cache', color: '#c3c2b7', dashed: true, path: ['olap'] },
-  { id: 'bi', x: 940, y: 190, title: 'Dashboards', sub: 'BI tools', path: ['olap'] },
-  { id: 'emb', x: 940, y: 340, title: 'Apps & AI agents', sub: 'REST · GraphQL · SQL', path: ['olap'] },
+  { id: 'pg', x: 270, y: 190, title: 'PostgreSQL', sub: 'system of record', color: '#3987e5', path: ['oltp', 'olap', 'stream'] },
+  { id: 'kafka', x: 500, y: 265, title: 'Kafka', sub: 'durable event log', color: N, log: true, kafka: true, path: ['olap', 'stream'] },
+  { id: 'ch', x: 730, y: 265, title: 'ClickHouse', sub: 'analytics warehouse', color: '#d95926', path: ['olap', 'stream'] },
+  { id: 'services', x: 730, y: 410, title: 'Other services', sub: 'search, email, fraud', kafka: true, path: ['stream'] },
+  { id: 'cube', x: 960, y: 265, title: 'Cube', sub: 'metrics + cache', color: N, dashed: true, path: ['olap'] },
+  { id: 'bi', x: 1190, y: 190, title: 'Dashboards', sub: 'BI tools', path: ['olap'] },
+  { id: 'emb', x: 1190, y: 340, title: 'Apps & AI agents', sub: 'REST · GraphQL · SQL', path: ['olap'] },
 ]
 const NW = 150
 const NH = 64
-const byId = Object.fromEntries(NODES.map((n) => [n.id, n]))
 
-const EDGES: { from: string; to: string; label: string; path: Path; color: string }[] = [
-  { from: 'mobile', to: 'sqlite', label: 'local', path: 'oltp', color: '#199e70' },
-  { from: 'sqlite', to: 'pg', label: 'sync', path: 'oltp', color: '#199e70' },
-  { from: 'web', to: 'pg', label: 'writes', path: 'oltp', color: '#3987e5' },
-  { from: 'pg', to: 'ch', label: 'CDC / ETL', path: 'olap', color: '#3987e5' },
-  { from: 'events', to: 'ch', label: 'append', path: 'olap', color: '#d95926' },
-  { from: 'ch', to: 'cube', label: 'SQL', path: 'olap', color: '#d95926' },
-  { from: 'cube', to: 'bi', label: '', path: 'olap', color: '#c3c2b7' },
-  { from: 'cube', to: 'emb', label: '', path: 'olap', color: '#c3c2b7' },
+// when: shown only with Kafka on ('kafka') or off ('direct'); unset = always.
+const EDGES: { from: string; to: string; label: string; path: Path[]; color: string; when?: 'kafka' | 'direct' }[] = [
+  { from: 'mobile', to: 'sqlite', label: 'local', path: ['oltp'], color: '#199e70' },
+  { from: 'sqlite', to: 'pg', label: 'sync', path: ['oltp'], color: '#199e70' },
+  { from: 'web', to: 'pg', label: 'writes', path: ['oltp'], color: '#3987e5' },
+  { from: 'pg', to: 'kafka', label: 'CDC (Debezium)', path: ['olap', 'stream'], color: '#3987e5', when: 'kafka' },
+  { from: 'events', to: 'kafka', label: 'produce', path: ['olap', 'stream'], color: N, when: 'kafka' },
+  { from: 'kafka', to: 'ch', label: 'consume', path: ['olap', 'stream'], color: N, when: 'kafka' },
+  { from: 'kafka', to: 'services', label: 'consume', path: ['stream'], color: N, when: 'kafka' },
+  { from: 'pg', to: 'ch', label: 'CDC / ETL', path: ['olap'], color: '#3987e5', when: 'direct' },
+  { from: 'events', to: 'ch', label: 'append', path: ['olap'], color: N, when: 'direct' },
+  { from: 'ch', to: 'cube', label: 'SQL', path: ['olap'], color: '#d95926' },
+  { from: 'cube', to: 'bi', label: '', path: ['olap'], color: N },
+  { from: 'cube', to: 'emb', label: '', path: ['olap'], color: N },
 ]
 
 function edgePath(a: Node, b: Node) {
@@ -43,16 +50,29 @@ const MODES: { id: Path | 'all'; label: string; note: string }[] = [
   { id: 'all', label: 'Whole system', note: 'Most real products use both sides: a row store to run the business, a column store to understand it.' },
   { id: 'oltp', label: 'OLTP path', note: 'Thousands of tiny, concurrent reads and writes. Each touches a few rows and must be correct right now.' },
   { id: 'olap', label: 'OLAP path', note: 'Data is copied out, appended in bulk and scanned in big aggregations. A few minutes of delay is usually fine.' },
+  { id: 'stream', label: 'Streaming path', note: 'Kafka is an append-only log, not a database you query. Producers write each event once; any number of consumers read it at their own pace and can replay from any offset. It decouples the systems, so ClickHouse can lag or restart without slowing Postgres down.' },
 ]
 
 export function Pipeline() {
   const [mode, setMode] = useState<Path | 'all'>('all')
+  const [kafka, setKafka] = useState(false)
+  // Without Kafka its column disappears, so everything right of it moves left by one column.
+  const nodes = kafka ? NODES : NODES.filter((n) => !n.kafka).map((n) => (n.x > 500 ? { ...n, x: n.x - 230 } : n))
+  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]))
+  const edges = EDGES.filter((e) => !e.when || e.when === (kafka ? 'kafka' : 'direct'))
+  const modes = MODES.filter((m) => kafka || m.id !== 'stream')
+  const W = kafka ? 1360 : 1130
+  const H = kafka ? 500 : 430
+  const toggleKafka = () => {
+    setKafka(!kafka)
+    setMode(kafka ? 'all' : 'stream')
+  }
   const on = (p: Path[] | Path) => mode === 'all' || (Array.isArray(p) ? p.includes(mode) : p === mode)
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        {MODES.map((m) => (
+        {modes.map((m) => (
           <button
             key={m.id}
             aria-pressed={mode === m.id}
@@ -64,11 +84,21 @@ export function Pipeline() {
             {m.label}
           </button>
         ))}
+        <button
+          aria-pressed={kafka}
+          onClick={toggleKafka}
+          className="ml-auto inline-flex items-center gap-2 rounded-full border border-axis px-3 py-1.5 text-sm text-ink-2 transition hover:border-muted"
+        >
+          <span className={`relative h-4 w-7 rounded-full transition-colors ${kafka ? 'bg-ink' : 'bg-axis'}`}>
+            <span className={`absolute top-0.5 size-3 rounded-full bg-page transition-all ${kafka ? 'left-3.5' : 'left-0.5'}`} />
+          </span>
+          Stream through Kafka
+        </button>
       </div>
-      <p className="text-sm text-ink-2">{MODES.find((m) => m.id === mode)!.note}</p>
+      <p className="text-sm text-ink-2">{modes.find((m) => m.id === mode)!.note}</p>
       <div className="overflow-x-auto rounded-xl bg-surface p-3 ring-1 ring-white/10">
-        <svg viewBox="0 0 1110 430" className="min-w-[760px]" role="img" aria-label="Typical data architecture from app databases to analytics">
-          {EDGES.map((e) => {
+        <svg viewBox={`0 0 ${W} ${H}`} className="min-w-[760px]" role="img" aria-label="Typical data architecture from app databases to analytics">
+          {edges.map((e) => {
             const d = edgePath(byId[e.from], byId[e.to])
             const lit = on(e.path)
             return (
@@ -84,7 +114,7 @@ export function Pipeline() {
               </g>
             )
           })}
-          {NODES.map((n) => (
+          {nodes.map((n) => (
             <g key={n.id} style={{ opacity: on(n.path) ? 1 : 0.2 }} className="transition-opacity duration-300">
               <rect
                 x={n.x}
@@ -101,10 +131,11 @@ export function Pipeline() {
               {n.color && <rect x={n.x} y={n.y + 14} width={4} height={NH - 28} rx={2} fill={n.color} />}
               <text x={n.x + 16} y={n.y + 28} fontSize={15} fontWeight={600} fill="#f0efec">{n.title}</text>
               <text x={n.x + 16} y={n.y + 47} fontSize={12} fill="#898781">{n.sub}</text>
+              {n.log && <LogTape x={n.x} y={n.y + NH + 8} />}
             </g>
           ))}
-          <text x={270} y={418} fontSize={11} fill="#898781" letterSpacing="0.1em">◀ OLTP · run the business</text>
-          <text x={1090} y={418} fontSize={11} fill="#898781" letterSpacing="0.1em" textAnchor="end">understand the business · OLAP ▶</text>
+          <text x={270} y={H - 10} fontSize={11} fill="#898781" letterSpacing="0.1em">◀ OLTP · run the business</text>
+          <text x={W - 20} y={H - 10} fontSize={11} fill="#898781" letterSpacing="0.1em" textAnchor="end">understand the business · OLAP ▶</text>
         </svg>
       </div>
     </div>
@@ -119,5 +150,31 @@ function EdgeLabel({ a, b, text }: { a: Node; b: Node; text: string }) {
     <text x={x} y={y} fontSize={11} fill="#c3c2b7" textAnchor={vertical ? 'start' : 'middle'} paintOrder="stroke" stroke="#1a1a19" strokeWidth={4}>
       {text}
     </text>
+  )
+}
+
+// Kafka's partition as a tape of messages: new ones keep landing at the end.
+function LogTape({ x, y }: { x: number; y: number }) {
+  const cells = 9
+  const w = 14
+  return (
+    <g aria-hidden>
+      {Array.from({ length: cells }, (_, i) => (
+        <rect
+          key={i}
+          x={x + i * (w + 2)}
+          y={y}
+          width={w}
+          height={12}
+          rx={2}
+          fill="#c3c2b7"
+          className="append"
+          style={{ animationDelay: `${i * 0.3}s` }}
+        />
+      ))}
+      <text x={x} y={y + 26} fontSize={10} fill="#898781">
+        offset 0 → … append only
+      </text>
+    </g>
   )
 }

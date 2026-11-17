@@ -28,7 +28,13 @@ html {
 }
 .flow { stroke-dasharray: 6 6; animation: dash 1s linear infinite; }
 
+@keyframes append {
+  0%, 8% { opacity: 0.12; }
+  12%, 100% { opacity: 0.85; }
+}
+.append { animation: append 2.7s linear infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  .flow { animation: none; }
+  .flow, .append { animation: none; }
   * { transition: none !important; }
 }

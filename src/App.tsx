@@ -72,7 +72,7 @@ export default function App() {
         <StorageDemo />
       </Section>
 
-      <Section n="03" title="The map" lead="Workload left to right, scale bottom to top. Cube is drawn above the map because it is not a database — it is a layer that reads from them.">
+      <Section n="03" title="The map" lead="Workload left to right, scale bottom to top. Cube is drawn above the map because it is not a database — it is a layer that reads from them. Kafka is not on it at all: you stream through it, you don’t query it (see 05).">
         <Landscape marker={markerFor(answers)} />
       </Section>
 
@@ -80,7 +80,7 @@ export default function App() {
         <Chooser answers={answers} onChange={setAnswers} />
       </Section>
 
-      <Section n="05" title="How they fit together" lead="They are not rivals. A typical product uses several, each doing the job it is shaped for.">
+      <Section n="05" title="How they fit together" lead="They are not rivals. A typical product uses several, each doing the job it is shaped for. Switch on Kafka to see the conveyor belt between them: it moves data, it doesn’t answer queries.">
         <Pipeline />
       </Section>
 
