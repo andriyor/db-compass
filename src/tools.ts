@@ -9,6 +9,7 @@ export type Tool = {
   tagline: string
   use: string[]
   avoid: string[]
+  alt?: string
 }
 
 // Categorical slots 1–3 (validated all-pairs on the dark surface). No 4th hue passes
@@ -59,8 +60,9 @@ export const TOOLS: Record<ToolId, Tool> = {
     color: '#c3c2b7',
     kind: 'Embedded OLAP · column store, in-process',
     tagline: 'The SQLite of analytics: columnar SQL inside your process.',
-    use: ['Analysing CSV / Parquet files on a laptop', 'Notebooks, data pipelines, local BI', 'Fast aggregations without running a server'],
+    use: ['Querying CSV / Parquet files directly — no loading step', 'Data bigger than RAM on one machine: it streams and spills to disk', 'Notebooks, data pipelines, local BI without a server'],
     avoid: ['Many concurrent writers', 'Serving dashboards to many users at once', 'Being your app’s transactional database'],
+    alt: 'Prefer a Python DataFrame API to SQL? Polars covers the same ground — also columnar, lazy and multithreaded.',
   },
   cube: {
     name: 'Cube',

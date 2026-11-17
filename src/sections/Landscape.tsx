@@ -177,6 +177,7 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
             <li key={u} className="flex gap-2"><span className="text-[#e66767]">✕</span>{u}</li>
           ))}
         </ul>
+        {tool.alt && <p className="mt-5 border-l-2 border-axis pl-3 text-sm text-ink-2">{tool.alt}</p>}
         <p className="mt-6 text-xs text-muted">Hover or tab through the map to switch.</p>
       </aside>
     </div>

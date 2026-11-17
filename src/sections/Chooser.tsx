@@ -80,6 +80,20 @@ export function Chooser({ answers, onChange }: { answers: Answers; onChange: (a:
                 )
               })}
             </div>
+            {k === 'size' && (
+              <p className="mt-2 border-l-2 border-axis pl-3 text-xs leading-relaxed text-muted">
+                You probably don’t have big data. One estimate from Amazon Redshift usage puts ~95% of tables under 100 GB —
+                one machine running Postgres or DuckDB handles that. Reach for a cluster only past it.{' '}
+                <a
+                  href="https://eddie.codes/posts/pandas-should-go-extinct/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-ink-2 underline decoration-axis underline-offset-2 hover:decoration-ink-2"
+                >
+                  Source
+                </a>
+              </p>
+            )}
           </fieldset>
         ))}
       </div>
