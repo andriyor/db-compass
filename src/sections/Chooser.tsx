@@ -1,5 +1,5 @@
 import { recommend, type Answers } from '../recommend.ts'
-import { TOOLS } from '../tools.ts'
+import { swatch, TOOLS } from '../tools.ts'
 
 type Option<K extends keyof Answers> = { value: Answers[K]; label: string }
 const QUESTIONS: { [K in keyof Answers]: { q: string; options: Option<K>[] } } = {
@@ -92,10 +92,7 @@ export function Chooser({ answers, onChange }: { answers: Answers; onChange: (a:
               <span className="h-3 rounded-full bg-grid">
                 <span
                   className="block h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${s.score}%`,
-                    background: s.id === 'cube' ? 'repeating-linear-gradient(135deg,#c3c2b7 0 4px,#52514e 4px 7px)' : TOOLS[s.id].color,
-                  }}
+                  style={{ ...swatch(s.id), width: `${s.score}%` }}
                 />
               </span>
               <span className="text-right tabular-nums text-ink">{s.score}</span>

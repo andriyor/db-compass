@@ -1,18 +1,18 @@
 import { useState } from 'react'
-import { TOOL_IDS, TOOLS } from '../tools.ts'
+import { swatch, TOOL_IDS, TOOLS } from '../tools.ts'
 
 type Fit = 0 | 1 | 2 | 3
-// order: sqlite, postgres, clickhouse, cube
-const ROWS: { s: string; fit: [Fit, Fit, Fit, Fit]; why: string }[] = [
-  { s: 'Local storage in a mobile / desktop app', fit: [3, 0, 0, 0], why: 'Needs to live inside the app and work offline — that is exactly SQLite.' },
-  { s: 'Prototype, tests, single-user tool', fit: [3, 2, 0, 0], why: 'Zero setup wins. Postgres is fine too if production will use it.' },
-  { s: 'Web app: users, orders, payments', fit: [1, 3, 0, 0], why: 'Many concurrent writers, constraints and transactions → Postgres.' },
-  { s: 'Bank-style transfers (strict ACID)', fit: [1, 3, 0, 0], why: 'Multi-row transactions with isolation are core OLTP; ClickHouse has no real transactions.' },
-  { s: 'Internal reports on ≤ 50M rows', fit: [1, 2, 2, 1], why: 'Postgres with indexes or a read replica often suffices; ClickHouse once queries get slow.' },
-  { s: 'Product analytics over billions of events', fit: [0, 0, 3, 2], why: 'Columnar scans and compression; Cube adds pre-aggregations and shared metric definitions.' },
-  { s: 'Logs, metrics, observability', fit: [0, 1, 3, 1], why: 'Append-heavy, time-ordered, aggregated — ClickHouse’s home turf.' },
-  { s: 'Customer-facing embedded analytics', fit: [0, 1, 2, 3], why: 'Cube gives per-tenant security, caching and APIs on top of the warehouse.' },
-  { s: 'One “revenue” number across BI, apps and AI', fit: [0, 0, 1, 3], why: 'That is the definition of a semantic layer.' },
+// order: sqlite, postgres, clickhouse, duckdb, cube
+const ROWS: { s: string; fit: [Fit, Fit, Fit, Fit, Fit]; why: string }[] = [
+  { s: 'Local storage in a mobile / desktop app', fit: [3, 0, 0, 0, 0], why: 'Needs to live inside the app and work offline — that is exactly SQLite.' },
+  { s: 'Prototype, tests, single-user tool', fit: [3, 2, 0, 2, 0], why: 'Zero setup wins. DuckDB if the tool is about analysing data; Postgres if production will use it.' },
+  { s: 'Web app: users, orders, payments', fit: [1, 3, 0, 0, 0], why: 'Many concurrent writers, constraints and transactions → Postgres.' },
+  { s: 'Bank-style transfers (strict ACID)', fit: [1, 3, 0, 0, 0], why: 'Multi-row transactions with isolation are core OLTP; ClickHouse has no real transactions.' },
+  { s: 'Internal reports on ≤ 50M rows', fit: [1, 2, 2, 2, 1], why: 'Postgres or a read replica often suffices; DuckDB over an export for ad-hoc analysis; ClickHouse once it must be shared and fast.' },
+  { s: 'Product analytics over billions of events', fit: [0, 0, 3, 1, 2], why: 'Columnar scans and compression; Cube adds pre-aggregations and shared metric definitions.' },
+  { s: 'Logs, metrics, observability', fit: [0, 1, 3, 1, 1], why: 'Append-heavy, time-ordered, aggregated — ClickHouse’s home turf.' },
+  { s: 'Customer-facing embedded analytics', fit: [0, 1, 2, 0, 3], why: 'Cube gives per-tenant security, caching and APIs on top of the warehouse.' },
+  { s: 'One “revenue” number across BI, apps and AI', fit: [0, 0, 1, 0, 3], why: 'That is the definition of a semantic layer.' },
 ]
 
 // Sequential blue, stepped for the dark surface: brighter = better fit.
@@ -27,7 +27,7 @@ export function FitMatrix() {
   return (
     <div className="rounded-xl bg-surface p-4 ring-1 ring-white/10">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[620px] border-separate border-spacing-[2px] text-sm">
+        <table className="w-full min-w-[720px] border-separate border-spacing-[2px] text-sm">
           <thead>
             <tr>
               <th className="text-left font-normal text-muted">Scenario</th>
@@ -36,7 +36,7 @@ export function FitMatrix() {
                   <span className="inline-flex items-center gap-1.5">
                     <span
                       className="size-2 rounded-full"
-                      style={id === 'cube' ? { border: '1.5px dashed #c3c2b7' } : { background: TOOLS[id].color }}
+                      style={swatch(id)}
                     />
                     {TOOLS[id].name}
                   </span>

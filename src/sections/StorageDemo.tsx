@@ -123,7 +123,7 @@ function DiskStrip({ layout, needed }: { layout: Layout; needed: (r: number, c: 
         <span className="text-sm font-medium">
           {layout === 'row' ? 'Row store' : 'Column store'}
           <span className="ml-2 text-xs font-normal text-muted">
-            {layout === 'row' ? 'SQLite, PostgreSQL' : 'ClickHouse'}
+            {layout === 'row' ? 'SQLite, PostgreSQL' : 'ClickHouse, DuckDB'}
           </span>
         </span>
         <span className="text-sm tabular-nums text-ink-2">

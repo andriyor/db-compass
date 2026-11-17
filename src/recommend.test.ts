@@ -17,6 +17,9 @@ test('shared dashboards over big data → ClickHouse + Cube in top two', () => {
   const ids = recommend({ workload: 'analytics', deployment: 'server', writers: 'many', size: 3, consumers: 'bi' }).slice(0, 2).map((s) => s.id)
   assert.deepEqual(ids.sort(), ['clickhouse', 'cube'])
 })
+test('analytics on a laptop → DuckDB', () => {
+  assert.equal(top({ workload: 'analytics', deployment: 'embedded', writers: 'one', size: 1, consumers: 'app' }), 'duckdb')
+})
 test('scores stay within 0..100', () => {
   for (const s of recommend({ workload: 'analytics', deployment: 'embedded', writers: 'many', size: 3, consumers: 'app' }))
     assert.ok(s.score >= 0 && s.score <= 100)

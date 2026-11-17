@@ -1,4 +1,6 @@
-export type ToolId = 'sqlite' | 'postgres' | 'clickhouse' | 'cube'
+import type { CSSProperties } from 'react'
+
+export type ToolId = 'sqlite' | 'postgres' | 'clickhouse' | 'duckdb' | 'cube'
 
 export type Tool = {
   name: string
@@ -9,8 +11,8 @@ export type Tool = {
   avoid: string[]
 }
 
-// Categorical slots 1–3 (validated all-pairs on the dark surface). Cube is not a
-// database, so it gets neutral ink + a dashed outline instead of a 4th hue.
+// Categorical slots 1–3 (validated all-pairs on the dark surface). No 4th hue passes
+// all-pairs, so DuckDB is neutral + hatched and Cube neutral + dashed outline.
 export const TOOLS: Record<ToolId, Tool> = {
   sqlite: {
     name: 'SQLite',
@@ -36,6 +38,14 @@ export const TOOLS: Record<ToolId, Tool> = {
     use: ['Product analytics, events, clickstreams', 'Logs, metrics, observability', 'Aggregations over huge append-only data'],
     avoid: ['Frequent single-row updates/deletes', 'Transactions across rows', 'Being your primary app database'],
   },
+  duckdb: {
+    name: 'DuckDB',
+    color: '#c3c2b7',
+    kind: 'Embedded OLAP · column store, in-process',
+    tagline: 'The SQLite of analytics: columnar SQL inside your process.',
+    use: ['Analysing CSV / Parquet files on a laptop', 'Notebooks, data pipelines, local BI', 'Fast aggregations without running a server'],
+    avoid: ['Many concurrent writers', 'Serving dashboards to many users at once', 'Being your app’s transactional database'],
+  },
   cube: {
     name: 'Cube',
     color: '#c3c2b7',
@@ -47,3 +57,12 @@ export const TOOLS: Record<ToolId, Tool> = {
 }
 
 export const TOOL_IDS = Object.keys(TOOLS) as ToolId[]
+
+const HATCH = 'repeating-linear-gradient(45deg,#c3c2b7 0 2px,transparent 2px 5px)'
+// Legend swatch / bar fill per tool: hue for the three databases, texture or outline for the rest.
+export const swatch = (id: ToolId): CSSProperties =>
+  id === 'cube'
+    ? { border: '1.5px dashed #c3c2b7' }
+    : id === 'duckdb'
+      ? { background: HATCH, boxShadow: 'inset 0 0 0 1.5px #c3c2b7' }
+      : { background: TOOLS[id].color }

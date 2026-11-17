@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TOOLS, type ToolId } from '../tools.ts'
+import { swatch, TOOLS, type ToolId } from '../tools.ts'
 
 const W = 760
 const H = 470
@@ -13,6 +13,7 @@ const REGIONS: { id: Exclude<ToolId, 'cube'>; cx: number; cy: number; rx: number
   { id: 'sqlite', cx: 0.17, cy: 0.15, rx: 0.14, ry: 0.11, lx: 0.2, ly: 0.18 },
   { id: 'postgres', cx: 0.33, cy: 0.47, rx: 0.22, ry: 0.19, lx: 0.36, ly: 0.56 },
   { id: 'clickhouse', cx: 0.78, cy: 0.64, rx: 0.19, ry: 0.27, lx: 0.76, ly: 0.75 },
+  { id: 'duckdb', cx: 0.78, cy: 0.15, rx: 0.17, ry: 0.11, lx: 0.74, ly: 0.18 },
 ]
 
 export function Landscape({ marker }: { marker: { x: number; y: number } }) {
@@ -38,6 +39,10 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
               <stop offset="0.5" stopColor="#1a1a19" stopOpacity="0" />
               <stop offset="1" stopColor="#d95926" stopOpacity="0.07" />
             </linearGradient>
+            <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="7" height="7" fill="#c3c2b7" fillOpacity="0.06" />
+              <line x1="0" y1="0" x2="0" y2="7" stroke="#c3c2b7" strokeOpacity="0.45" strokeWidth="2" />
+            </pattern>
           </defs>
           <rect x={M.l} y={M.t} width={pw} height={ph} fill="url(#split)" />
           {[0.25, 0.5, 0.75].map((v) => (
@@ -110,8 +115,8 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
                   cy={Y(r.cy)}
                   rx={r.rx * pw}
                   ry={r.ry * ph}
-                  fill={t.color}
-                  fillOpacity={on ? 0.32 : 0.16}
+                  fill={r.id === 'duckdb' ? 'url(#hatch)' : t.color}
+                  fillOpacity={r.id === 'duckdb' ? 1 : on ? 0.32 : 0.16}
                   stroke={t.color}
                   strokeWidth={on ? 2.5 : 1.5}
                   className="transition-all duration-200"
@@ -136,7 +141,7 @@ export function Landscape({ marker }: { marker: { x: number; y: number } }) {
         <div className="flex items-center gap-2">
           <span
             className="size-3 rounded-full"
-            style={active === 'cube' ? { border: '1.5px dashed #c3c2b7' } : { background: tool.color }}
+            style={swatch(active)}
           />
           <h3 className="text-lg font-semibold">{tool.name}</h3>
         </div>
