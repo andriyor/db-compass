@@ -1,5 +1,7 @@
 # DB Compass
 
+**Live: https://db-compass.vercel.app/**
+
 A visual guide to **OLTP vs OLAP**, and to when you'd reach for **SQLite, PostgreSQL, MySQL, TimescaleDB, ClickHouse, DuckDB, Cube** and **Kafka**. It explains them by how data moves, not by feature lists.
 
 ## What's on the page
