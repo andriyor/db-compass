@@ -32,7 +32,12 @@ export default function App() {
   return (
     <main className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
       <header className="pt-16 pb-12">
-        <p className="text-sm font-medium tracking-wide text-muted">DB COMPASS</p>
+        <div className="flex items-center justify-between text-sm font-medium tracking-wide text-muted">
+          <p>DB COMPASS</p>
+          <a href="https://github.com/andriyor/db-compass" className="hover:text-ink">
+            GitHub ↗
+          </a>
+        </div>
         <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
           Run the business with <span className="text-pg">OLTP</span>.
           <br />
