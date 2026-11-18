@@ -43,16 +43,13 @@ export default function App() {
           <b className="text-ch">ClickHouse</b>, <b className="text-ink">DuckDB</b> and <b className="text-ink">Cube</b> — explained by how data moves, not by feature lists.
         </p>
         <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
-          {TOOL_IDS.map((id) => (
+          {/* databases only: Cube is a layer on top, Kafka a stream — both explained below */}
+          {TOOL_IDS.filter((id) => id !== 'cube').map((id) => (
             <li key={id} className="flex items-center gap-2">
               <ToolIcon id={id} size={20} />
               {TOOLS[id].name}
             </li>
           ))}
-          <li className="flex items-center gap-2">
-            <ToolIcon id="kafka" size={20} />
-            Kafka
-          </li>
         </ul>
       </header>
 
